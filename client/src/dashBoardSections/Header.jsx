@@ -4,7 +4,7 @@ import { AppContent } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
-import logo from "../assets/images/codeuLogo.png";
+import logo from "../assets/images/logo.png";
 
 function Header() {
   const { userData, backendUrl, setUserData, setIsLoggedin } =

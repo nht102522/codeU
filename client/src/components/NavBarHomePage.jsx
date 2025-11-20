@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import logo from "../assets/images/codeuLogo.png";
+import logo from "../assets/images/logo.png";
 import hamburger from "../assets/icons/hamburger.svg";
 import { navLinks } from "../constants";
 import { useNavigate } from "react-router-dom";

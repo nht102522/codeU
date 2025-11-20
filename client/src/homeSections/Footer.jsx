@@ -1,6 +1,6 @@
 import React from "react";
 import { footerLinks, socialIcon } from "../constants";
-import codeuLogo from "../assets/images/codeuLogo.png";
+import codeuLogo from "../assets/images/logo.png";
 
 const Footer = () => {
   return (
