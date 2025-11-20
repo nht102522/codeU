@@ -4,6 +4,7 @@ import { AppContent } from "../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
+import logo from "../assets/images/codeuLogo.png";
 
 function Header() {
   const { userData, backendUrl, setUserData, setIsLoggedin } =
@@ -47,7 +48,7 @@ function Header() {
       <div className="flex items-center gap-2.5 text-white text-2xl font-bold">
         <div className="w-10 h-10 bg-white rounded-md flex items-center justify-center p-1">
           <img
-            src="https://gitlab.cci.drexel.edu/cid/2526/fw1023/a4/codeu-website-project/-/raw/main/codeulogo.png"
+            src={logo}
             alt="codeU Logo"
             className="w-full h-full object-contain"
           />
