@@ -42,7 +42,7 @@ export const EmailVerify = () => {
       if (data.success) {
         toast.success(data.message);
         getUserData();
-        navigate("/");
+        navigate("/dashboard");
       } else {
         toast.error(data.message);
       }
@@ -51,12 +51,12 @@ export const EmailVerify = () => {
     }
   };
   useEffect(() => {
-    isLoggedin && userData && userData.isAccountVerified && navigate("/");
+    isLoggedin && userData && userData.isAccountVerified && navigate("/dashboard");
   }, [isLoggedin, userData]);
   return (
     <div className="flex items-center justify-center min-h-screen  bg-gradient-to-r from-blue-200 to-white">
       <img
-        onClick={() => navigate("/")}
+        onClick={() => navigate("/dashboard")}
         src={assets.logo}
         alt=""
         className="absolute left-5 sm:left-20 top-5 w-28 sm:w-32 cursor-pointer"
