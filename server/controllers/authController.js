@@ -38,7 +38,12 @@ export const register = async (req, res) => {
       subject: "Welcome to CodeU",
       text: `Welcome to CodeU website. Your account has been created with email id: ${email}`,
     };
-    await transporter.sendMail(mailOptions);
+    // await transporter.sendMail(mailOptions);
+    transporter
+      .sendMail(mailOptions)
+      .catch((err) =>
+        console.error("Failed to send welcome email:", err.message)
+      );
     return res.json({ success: true });
   } catch (error) {
     res.json({ success: false, message: error.message });
