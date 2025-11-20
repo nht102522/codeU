@@ -53,7 +53,11 @@ export default function NavBarHomePage() {
   return (
     <header className="px-8 py-4 w-full">
       <nav className="max-w-full mx-auto px-4 py-4 flex justify-between items-center bg-blue-200 rounded-md">
-        <a href="dashboard.html">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="cursor-pointer"
+        >
           <img
             src={logo}
             width="25"
@@ -61,7 +65,7 @@ export default function NavBarHomePage() {
             alt="CodeU Logo"
             className="h-10 w-auto"
           />
-        </a>
+        </button>
 
         <div className="flex justify-between items-center gap-16 flex-1 max-md:hidden">
           <ul className="flex-1 flex justify-center items-center gap-16">
