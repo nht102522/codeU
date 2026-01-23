@@ -6,8 +6,16 @@ function ProfileCard() {
 
   return (
     <div className="bg-[radial-gradient(circle_at_center,_#1e40af,_#38bdf8)] rounded-xl p-5 text-center text-white mb-5">
-      <div className="w-20 h-20 bg-yellow-400 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white">
-        {userData && userData.name ? userData.name[0].toUpperCase() : "U"}
+      <div className="w-24 h-24 bg-yellow-400 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white overflow-hidden">
+        {userData && userData.avatarUrl ? (
+          <img
+            src={userData.avatarUrl}
+            alt="User avatar"
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span>{userData && userData.name ? userData.name[0].toUpperCase() : "U"}</span>
+        )}
       </div>
       <div className="text-lg font-semibold mb-1">
         {userData && userData.name ? userData.name : "User Name"}

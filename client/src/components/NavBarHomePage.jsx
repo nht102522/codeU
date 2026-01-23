@@ -7,7 +7,7 @@ import { AppContent } from "../context/AppContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export default function NavBarHomePage() {
+export default function NavBarHomePage({ logoSize = 56 }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { userData, backendUrl, setUserData, setIsLoggedin } =
@@ -60,20 +60,21 @@ export default function NavBarHomePage() {
         >
           <img
             src={logo}
-            width="25"
-            height="25"
+            width={logoSize}
+            height={logoSize}
             alt="CodeU Logo"
-            className="h-10 w-auto"
+            className="w-auto"
+            style={{ height: logoSize }}
           />
         </button>
 
         <div className="flex justify-between items-center gap-16 flex-1 max-md:hidden">
-          <ul className="flex-1 flex justify-center items-center gap-16">
+          <ul className="flex-1 flex justify-center items-center gap-16 text-gray-900">
             {navLinks.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="text-black-600 hover:text-blue-600 font-bold text-xl"
+                  className="font-bold text-xl text-black visited:text-black hover:!text-blue-600 transition-colors"
                 >
                   {link.label}
                 </a>
@@ -82,8 +83,18 @@ export default function NavBarHomePage() {
           </ul>
 
           {userData ? (
-            <div className="w-8 h-8 flex justify-center items-center rounded-full bg-blue-700 text-white relative group">
-              <p className="font-bold">{userData.name[0].toUpperCase()}</p>
+            <div className="w-10 h-10 flex justify-center items-center rounded-full bg-blue-700 text-white relative group">
+              {userData.avatarUrl ? (
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <img
+                    src={userData.avatarUrl}
+                    alt="User avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <p className="font-bold">{userData.name[0].toUpperCase()}</p>
+              )}
               <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10 ">
                 <ul className="list-none m-0 p-2 bg-gray-100 text-sm rounded-sm">
                   {!userData.isAccountVerified && (
@@ -94,6 +105,18 @@ export default function NavBarHomePage() {
                       Verify email
                     </li>
                   )}
+                  <li
+                    onClick={() => navigate("/dashboard")}
+                    className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                  >
+                    Dashboard
+                  </li>
+                  <li
+                    onClick={() => navigate("/profile")}
+                    className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                  >
+                    Profile
+                  </li>
 
                   <li
                     onClick={logout}

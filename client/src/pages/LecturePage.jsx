@@ -1,5 +1,12 @@
-import { useContext, useState } from "react";
-import { Box, Button, Flex, Heading, Image, Text } from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Text,
+} from "@chakra-ui/react";
 import {
   ChapterSelector,
   chapters,
@@ -7,23 +14,119 @@ import {
 import LectureSelector from "../lecturePageSections/LectureSelector";
 import CodeEditor from "../lecturePageSections/CodeEditor";
 import { AppContent } from "../context/AppContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
+import { CheckIcon } from "@chakra-ui/icons";
 
 function LecturePage() {
   const [selectedChapter, setSelectedChapter] = useState("intro");
   const [selectedLecture, setSelectedLecture] = useState("0");
+  const [isLectureDone, setIsLectureDone] = useState(false);
+  const [progress, setProgress] = useState({});
   const navigate = useNavigate();
-  const { userData, backendUrl, setUserData, setIsLoggedin } =
+  const [searchParams] = useSearchParams();
+  const { userData, backendUrl, setUserData, setIsLoggedin, getUserData } =
     useContext(AppContent);
+
+  useEffect(() => {
+    const chapterParam = searchParams.get("chapter");
+    const lectureParam = searchParams.get("lecture");
+
+    if (chapterParam && chapters[chapterParam]) {
+      setSelectedChapter(chapterParam);
+      const lectureIndex = parseInt(lectureParam ?? "0", 10);
+      if (
+        Number.isInteger(lectureIndex) &&
+        lectureIndex >= 0 &&
+        lectureIndex < chapters[chapterParam].length
+      ) {
+        setSelectedLecture(String(lectureIndex));
+      } else {
+        setSelectedLecture("0");
+      }
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const lectureIndex = Number(selectedLecture);
+    const progressData = progress?.python;
+    const completed =
+      progressData &&
+      progressData[selectedChapter] &&
+      progressData[selectedChapter].includes(lectureIndex);
+    setIsLectureDone(Boolean(completed));
+  }, [selectedChapter, selectedLecture, progress]);
+
+  useEffect(() => {
+    if (userData?.lectureProgress) {
+      setProgress(userData.lectureProgress);
+    }
+  }, [userData]);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const { data } = await axios.get(`${backendUrl}/api/user/progress`, {
+          withCredentials: true,
+        });
+        if (data.success) {
+          setProgress(data.lectureProgress || {});
+          setUserData((prev) =>
+            prev ? { ...prev, lectureProgress: data.lectureProgress } : prev,
+          );
+        }
+      } catch (error) {
+        // silent fail; button state will rely on existing userData
+      }
+    };
+    fetchProgress();
+  }, [backendUrl, setUserData]);
+
+  const markLectureComplete = async () => {
+    if (!userData) {
+      toast.error("Please log in to track your progress");
+      navigate("/login");
+      return;
+    }
+    try {
+      axios.defaults.withCredentials = true;
+      const { data } = await axios.post(
+        `${backendUrl}/api/user/progress`,
+        {
+          courseId: "python",
+          chapterKey: selectedChapter,
+          lectureIndex: Number(selectedLecture),
+        },
+        { withCredentials: true },
+      );
+
+      if (data.success) {
+        setUserData((prev) =>
+          prev
+            ? { ...prev, lectureProgress: data.lectureProgress }
+            : { lectureProgress: data.lectureProgress },
+        );
+        setProgress(data.lectureProgress);
+        getUserData();
+        setIsLectureDone(true);
+        toast.success("Lecture marked as completed");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message || error.message || "Failed to mark lecture";
+      toast.error(message);
+    }
+  };
 
   const sendVerificationOtp = async () => {
     try {
       axios.defaults.withCredentials = true;
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/send-verify-otp`
+        `${backendUrl}/api/auth/send-verify-otp`,
       );
       if (data.success) {
         navigate("/email-verify");
@@ -95,11 +198,18 @@ function LecturePage() {
               justifyContent="center"
               color="white"
               fontWeight="bold"
+              cursor="pointer"
+              onClick={() => navigate("/dashboard")}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") navigate("/dashboard");
+              }}
             >
               Py
             </Box>
             <Heading as="h1" size="lg" color="gray.800" whiteSpace="nowrap">
-              Introduction to Python
+              Python
             </Heading>
           </Flex>
 
@@ -119,11 +229,19 @@ function LecturePage() {
               onPrevLecture={handlePrevLecture}
               onNextLecture={handleNextLecture}
             />
+            <Button
+              colorScheme={isLectureDone ? "green" : "blue"}
+              variant={isLectureDone ? "solid" : "outline"}
+              leftIcon={isLectureDone ? <CheckIcon /> : undefined}
+              onClick={markLectureComplete}
+            >
+              {isLectureDone ? "Completed" : "Mark as Done"}
+            </Button>
             {userData ? (
               <Box position="relative" role="group">
                 <Flex
-                  w={8}
-                  h={8}
+                  w={10}
+                  h={10}
                   align="center"
                   justify="center"
                   rounded="full"
@@ -132,11 +250,21 @@ function LecturePage() {
                   fontWeight="bold"
                   cursor="pointer"
                 >
-                  <Text>
-                    {userData.name
-                      ? userData.name[0].toUpperCase()
-                      : "U"}
-                  </Text>
+                  {userData.avatarUrl ? (
+                    <Box w="100%" h="100%" overflow="hidden" rounded="full">
+                      <Image
+                        src={userData.avatarUrl}
+                        alt="User avatar"
+                        w="100%"
+                        h="100%"
+                        objectFit="cover"
+                      />
+                    </Box>
+                  ) : (
+                    <Text>
+                      {userData.name ? userData.name[0].toUpperCase() : "U"}
+                    </Text>
+                  )}
                 </Flex>
                 <Box
                   position="absolute"
@@ -157,22 +285,46 @@ function LecturePage() {
                     p={2}
                   >
                     {!userData.isAccountVerified && (
-                      <Box
-                        as="li"
-                        px={3}
-                        py={1}
-                        cursor="pointer"
-                        _hover={{ bg: "gray.200" }}
-                        whiteSpace="nowrap"
-                        onClick={sendVerificationOtp}
-                      >
-                        Verify email
-                      </Box>
-                    )}
                     <Box
-                      as="li"
-                      px={3}
-                      py={1}
+                    as="li"
+                    px={3}
+                    py={1}
+                    cursor="pointer"
+                    _hover={{ bg: "gray.200" }}
+                    whiteSpace="nowrap"
+                    onClick={sendVerificationOtp}
+                  >
+                    Verify email
+                  </Box>
+                )}
+                  <Box
+                    as="li"
+                    px={3}
+                    py={1}
+                    cursor="pointer"
+                    _hover={{ bg: "gray.200" }}
+                    whiteSpace="nowrap"
+                    color="black"
+                    onClick={() => navigate("/profile")}
+                  >
+                    Profile
+                  </Box>
+                  <Box
+                    as="li"
+                    px={3}
+                    py={1}
+                    cursor="pointer"
+                    _hover={{ bg: "gray.200" }}
+                    whiteSpace="nowrap"
+                    color="black"
+                    onClick={() => navigate("/dashboard")}
+                  >
+                    Dashboard
+                  </Box>
+                  <Box
+                    as="li"
+                    px={3}
+                    py={1}
                       cursor="pointer"
                       _hover={{ bg: "gray.200" }}
                       whiteSpace="nowrap"
@@ -192,11 +344,7 @@ function LecturePage() {
                 colorScheme="gray"
                 onClick={() => navigate("/login")}
                 rightIcon={
-                  <Image
-                    src={assets.arrow_icon}
-                    alt="Arrow icon"
-                    boxSize={4}
-                  />
+                  <Image src={assets.arrow_icon} alt="Arrow icon" boxSize={4} />
                 }
               >
                 Login

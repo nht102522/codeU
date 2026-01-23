@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
 import LessonCard from './LessonCard';
 import CourseCard from './CourseCard';
+import { chapters, chapterOptions } from '../lecturePageSections/ChapterSelector';
+
+const pythonChapterOrder = [
+  'intro',
+  'setup',
+  'basics',
+  'datatypes',
+  'control',
+  'functions',
+  'modules',
+  'files',
+  'oop',
+  'libraries',
+  'next'
+];
 
 function MainContent() {
   const lessons = [
@@ -14,7 +29,10 @@ function MainContent() {
       name: 'PYTHON',
       logo: 'https://upload.wikimedia.org/wikipedia/commons/c/c3/Python-logo-notext.svg',
       bgColor: 'bg-white',
-      lessonsCompleted: 'lessons completed'
+      lessonsCompleted: 'lessons completed',
+      toc: chapters,
+      chapterLabels: chapterOptions,
+      chapterOrder: pythonChapterOrder
     },
     {
       name: 'JAVASCRIPT',
@@ -40,7 +58,7 @@ function MainContent() {
     <div className="p-4 md:p-8">
       {/* Next Lesson Section */}
       <div className="mb-8">
-        <h2 className="text-3xl mb-5 text-gray-800">Next lesson</h2>
+        <h2 className="text-4xl md:text-5xl mb-5 text-gray-800">Next lesson</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {lessons.map((lesson, index) => (
             <LessonCard 
@@ -55,7 +73,7 @@ function MainContent() {
 
       {/* Courses Section */}
       <div className="mt-10">
-        <h2 className="text-2xl mb-5 text-gray-800">Courses Available</h2>
+        <h2 className="text-4xl md:text-5xl mb-5 text-gray-800">Courses Available</h2>
         <div>
           {courses.map((course, index) => (
             <CourseCard 
@@ -64,6 +82,9 @@ function MainContent() {
               logo={course.logo}
               bgColor={course.bgColor}
               lessonsCompleted={course.lessonsCompleted}
+              toc={course.toc}
+              chapterLabels={course.chapterLabels}
+              chapterOrder={course.chapterOrder}
             />
           ))}
         </div>

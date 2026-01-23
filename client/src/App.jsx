@@ -9,6 +9,8 @@ import { ResetPassword } from "./pages/ResetPassword";
 import DashBoard from "./pages/DashBoard";
 import { ToastContainer } from "react-toastify";
 import LecturePage from "./pages/LecturePage";
+import Profile from "./pages/Profile";
+import AboutUs from "./pages/AboutUs";
 
 const App = () => {
   return (
@@ -21,6 +23,14 @@ const App = () => {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/dashboard" element={<DashBoard />} />
         <Route
+          path="/profile"
+          element={
+            <ChakraProvider theme={theme}>
+              <Profile />
+            </ChakraProvider>
+          }
+        />
+        <Route
           path="/lecture"
           element={
             <ChakraProvider theme={theme}>
@@ -28,6 +38,7 @@ const App = () => {
             </ChakraProvider>
           }
         />
+        <Route path="/aboutus" element={<AboutUs />} />
       </Routes>
     </div>
   );

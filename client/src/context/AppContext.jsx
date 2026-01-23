@@ -8,6 +8,8 @@ export const AppContextProvider = (props) => {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [isLoggedin, setIsLoggedin] = useState(false);
   const [userData, setUserData] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
   const getAuthState = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/auth/is-auth");
@@ -17,14 +19,19 @@ export const AppContextProvider = (props) => {
       }
     } catch (error) {
       toast.error(error.message);
+    } finally {
+      setAuthChecked(true);
     }
   };
   const getUserData = async () => {
+    setLoadingUser(true);
     try {
       const { data } = await axios.get(backendUrl + "/api/user/data");
       data.success ? setUserData(data.userData) : toast.error(data.message);
     } catch (error) {
       toast.error(data.message);
+    } finally {
+      setLoadingUser(false);
     }
   };
   useEffect(() => {
@@ -37,6 +44,8 @@ export const AppContextProvider = (props) => {
     userData,
     setUserData,
     getUserData,
+    loadingUser,
+    authChecked,
   };
   return (
     <AppContent.Provider value={value}>{props.children}</AppContent.Provider>

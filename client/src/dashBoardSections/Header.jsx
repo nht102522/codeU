@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContent } from "../context/AppContext";
 import axios from "axios";
@@ -10,6 +10,7 @@ function Header() {
   const { userData, backendUrl, setUserData, setIsLoggedin } =
     useContext(AppContent);
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
 
   const sendVerificationOtp = async () => {
     try {
@@ -42,25 +43,66 @@ function Header() {
     }
   };
 
+  const updateAvatar = async (file) => {
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const nextUrl = reader.result?.toString() || "";
+      try {
+        const { data } = await axios.put(
+          `${backendUrl}/api/user/profile`,
+          { avatarUrl: nextUrl },
+          { withCredentials: true },
+        );
+        if (data.success) {
+          setUserData(data.userData);
+          toast.success("Profile photo updated");
+        } else {
+          toast.error(data.message);
+        }
+      } catch (error) {
+        toast.error(error.response?.data?.message || error.message);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-4 md:p-5 flex flex-col md:flex-row justify-between items-center gap-4">
       {/* Logo Section */}
       <div className="flex items-center gap-2.5 text-white text-2xl font-bold">
-        <div className="w-10 h-10 bg-white rounded-md flex items-center justify-center p-1">
+        <button
+          className="w-10 h-10 bg-white rounded-md flex items-center justify-center p-1 hover:opacity-80 transition-opacity"
+          onClick={() => navigate("/")}
+        >
           <img
             src={logo}
             alt="codeU Logo"
             className="w-full h-full object-contain"
           />
-        </div>
-        <button className="hover:opacity-80 transition-opacity">codeU</button>
+        </button>
+        <button
+          className="hover:opacity-80 transition-opacity"
+          onClick={() => navigate("/")}
+        >
+          codeU
+        </button>
       </div>
 
       {/* Right-side: user / login */}
       <div className="flex items-center gap-4">
         {userData ? (
-          <div className="w-8 h-8 flex justify-center items-center rounded-full bg-yellow-500 text-white relative group">
-            <p className="font-bold">{userData.name[0].toUpperCase()}</p>
+          <div className="w-10 h-10 flex justify-center items-center rounded-full bg-yellow-500 text-white relative group">
+            {userData.avatarUrl ? (
+              <div className="w-full h-full rounded-full overflow-hidden">
+                <img
+                  src={userData.avatarUrl}
+                  alt="User avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ) : (
+              <p className="font-bold">{userData.name[0].toUpperCase()}</p>
+            )}
             <div className="absolute hidden group-hover:block top-0 right-0 z-10 text-black rounded pt-10 ">
               <ul className="list-none m-0 p-2 bg-gray-100 text-sm rounded-sm">
                 {!userData.isAccountVerified && (
@@ -71,7 +113,18 @@ function Header() {
                     Verify email
                   </li>
                 )}
-
+                <li
+                  onClick={() => navigate("/profile")}
+                  className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                >
+                  Profile
+                </li>
+                <li
+                  onClick={() => navigate("/dashboard")}
+                  className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                >
+                  Dashboard
+                </li>
                 <li
                   onClick={logout}
                   className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
@@ -90,6 +143,16 @@ function Header() {
           </button>
         )}
       </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) updateAvatar(file);
+        }}
+      />
     </div>
   );
 }
