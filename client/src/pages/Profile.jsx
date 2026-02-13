@@ -34,6 +34,7 @@ const Profile = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [initialAvatarUrl, setInitialAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
   const [githubUrl, setGithubUrl] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
@@ -53,6 +54,7 @@ const Profile = () => {
       setFirstName(userData.firstName || "");
       setLastName(userData.lastName || "");
       setAvatarUrl(userData.avatarUrl || "");
+      setInitialAvatarUrl(userData.avatarUrl || "");
       setBio(userData.bio || "");
       setGithubUrl(userData.githubUrl || "");
       setLinkedinUrl(userData.linkedinUrl || "");
@@ -77,16 +79,19 @@ const Profile = () => {
     }
     setSaving(true);
     try {
+      const payload = {
+        firstName,
+        lastName,
+        bio,
+        githubUrl,
+        linkedinUrl,
+      };
+      if (avatarUrl !== initialAvatarUrl) {
+        payload.avatarUrl = avatarUrl;
+      }
       const { data } = await axios.put(
         `${backendUrl}/api/user/profile`,
-        {
-          firstName,
-          lastName,
-          avatarUrl,
-          bio,
-          githubUrl,
-          linkedinUrl,
-        },
+        payload,
         { withCredentials: true },
       );
       if (data.success) {
@@ -94,6 +99,7 @@ const Profile = () => {
         getUserData();
         toast.success("Profile updated");
         setIsEditing(false);
+        setInitialAvatarUrl(data.userData?.avatarUrl || "");
       } else {
         toast.error(data.message);
       }
@@ -105,6 +111,30 @@ const Profile = () => {
       toast.error(message);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const saveAvatar = async (nextUrl) => {
+    if (!isLoggedin) {
+      toast.error("Please log in to update your profile");
+      return;
+    }
+    try {
+      const { data } = await axios.put(
+        `${backendUrl}/api/user/profile`,
+        { avatarUrl: nextUrl },
+        { withCredentials: true },
+      );
+      if (data.success) {
+        setUserData(data.userData);
+        setInitialAvatarUrl(data.userData?.avatarUrl || "");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.message || error.message || "Failed to update avatar";
+      toast.error(message);
     }
   };
 
@@ -170,6 +200,7 @@ const Profile = () => {
                       setUserData((prev) =>
                         prev ? { ...prev, avatarUrl: nextUrl } : prev,
                       );
+                      saveAvatar(nextUrl);
                     };
                     reader.readAsDataURL(file);
                   }

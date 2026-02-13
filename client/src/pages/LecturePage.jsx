@@ -10,7 +10,9 @@ import {
 import {
   ChapterSelector,
   chapters,
+  chapterOptions,
 } from "../lecturePageSections/ChapterSelector";
+import { chapterOrder } from "../lecturePageSections/lecture-order";
 import LectureSelector from "../lecturePageSections/LectureSelector";
 import CodeEditor from "../lecturePageSections/CodeEditor";
 import { AppContent } from "../context/AppContext";
@@ -21,7 +23,7 @@ import { assets } from "../assets/assets";
 import { CheckIcon } from "@chakra-ui/icons";
 
 function LecturePage() {
-  const [selectedChapter, setSelectedChapter] = useState("intro");
+  const [selectedChapter, setSelectedChapter] = useState("chapter1");
   const [selectedLecture, setSelectedLecture] = useState("0");
   const [isLectureDone, setIsLectureDone] = useState(false);
   const [progress, setProgress] = useState({});
@@ -46,6 +48,9 @@ function LecturePage() {
       } else {
         setSelectedLecture("0");
       }
+    } else {
+      setSelectedChapter("chapter1");
+      setSelectedLecture("0");
     }
   }, [searchParams]);
 
@@ -157,6 +162,14 @@ function LecturePage() {
     const current = parseInt(selectedLecture);
     if (current > 0) {
       setSelectedLecture(String(current - 1));
+      return;
+    }
+
+    const currentChapterIndex = chapterOrder.indexOf(selectedChapter);
+    if (currentChapterIndex > 0) {
+      const prevChapter = chapterOrder[currentChapterIndex - 1];
+      setSelectedChapter(prevChapter);
+      setSelectedLecture(String(chapters[prevChapter].length - 1));
     }
   };
 
@@ -165,6 +178,14 @@ function LecturePage() {
     const maxIndex = chapters[selectedChapter].length - 1;
     if (current < maxIndex) {
       setSelectedLecture(String(current + 1));
+      return;
+    }
+
+    const currentChapterIndex = chapterOrder.indexOf(selectedChapter);
+    if (currentChapterIndex !== -1 && currentChapterIndex < chapterOrder.length - 1) {
+      const nextChapter = chapterOrder[currentChapterIndex + 1];
+      setSelectedChapter(nextChapter);
+      setSelectedLecture("0");
     }
   };
 
@@ -228,6 +249,15 @@ function LecturePage() {
               onLectureChange={setSelectedLecture}
               onPrevLecture={handlePrevLecture}
               onNextLecture={handleNextLecture}
+              disablePrev={
+                chapterOrder.indexOf(selectedChapter) === 0 &&
+                Number(selectedLecture) === 0
+              }
+              disableNext={
+                chapterOrder.indexOf(selectedChapter) === chapterOrder.length - 1 &&
+                Number(selectedLecture) ===
+                  chapters[selectedChapter].length - 1
+              }
             />
             <Button
               colorScheme={isLectureDone ? "green" : "blue"}

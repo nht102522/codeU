@@ -6,6 +6,7 @@ import Hero from "../homeSections/Hero";
 import Roadmaps from "../homeSections/Roadmaps";
 import Courses from "../homeSections/Courses";
 import CodeEditor from "../homeSections/CodeEditor";
+import Feedback from "../homeSections/Feedback";
 import LogInSignUp from "../homeSections/LogInSignUp";
 import Footer from "../homeSections/Footer";
 
@@ -26,6 +27,7 @@ const Home = () => {
       <Roadmaps />
       <Courses />
       <CodeEditor />
+      <Feedback />
       <LogInSignUp />
       <Footer />
     </div>

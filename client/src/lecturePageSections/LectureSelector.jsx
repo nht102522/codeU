@@ -7,6 +7,8 @@ const LectureSelector = ({
   onLectureChange,
   onPrevLecture,
   onNextLecture,
+  disablePrev = false,
+  disableNext = false,
 }) => {
   const lectures = chapters[selectedChapter] || [];
   const currentIndex = parseInt(selectedLecture);
@@ -19,9 +21,16 @@ const LectureSelector = ({
         value={selectedLecture}
         onChange={(e) => onLectureChange(e.target.value)}
         borderColor="gray.300"
-        minW="300px"
+        w="360px"
+        minW="360px"
+        maxW="360px"
         color="gray.800"
         bg="white"
+        sx={{
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+        }}
         _focus={{
           borderColor: "blue.500",
           boxShadow: "0 0 0 1px #0ea5e9",
@@ -40,7 +49,7 @@ const LectureSelector = ({
         color="black"
         _hover={{ bg: "yellow.500" }}
         onClick={onPrevLecture}
-        isDisabled={currentIndex === 0}
+        isDisabled={disablePrev}
         flexShrink={0}
       >
         ←
@@ -52,7 +61,7 @@ const LectureSelector = ({
         color="white"
         _hover={{ bg: "blue.600" }}
         onClick={onNextLecture}
-        isDisabled={currentIndex === maxIndex}
+        isDisabled={disableNext}
         flexShrink={0}
       >
         →

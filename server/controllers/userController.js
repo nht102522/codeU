@@ -80,12 +80,12 @@ export const updateProfile = async (req, res) => {
   try {
     const {
       userId,
-      firstName = "",
-      lastName = "",
-      avatarUrl = "",
-      bio = "",
-      githubUrl = "",
-      linkedinUrl = "",
+      firstName,
+      lastName,
+      avatarUrl,
+      bio,
+      githubUrl,
+      linkedinUrl,
     } = req.body;
     const user = await userModel.findById(userId);
 
@@ -93,16 +93,33 @@ export const updateProfile = async (req, res) => {
       return res.json({ success: false, message: "User not found" });
     }
 
-    user.firstName = firstName;
-    user.lastName = lastName;
-    user.avatarUrl = avatarUrl;
-    user.bio = bio;
-    user.githubUrl = githubUrl;
-    user.linkedinUrl = linkedinUrl;
+    if (Object.prototype.hasOwnProperty.call(req.body, "firstName")) {
+      user.firstName = firstName;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "lastName")) {
+      user.lastName = lastName;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "avatarUrl")) {
+      user.avatarUrl = avatarUrl;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "bio")) {
+      user.bio = bio;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "githubUrl")) {
+      user.githubUrl = githubUrl;
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, "linkedinUrl")) {
+      user.linkedinUrl = linkedinUrl;
+    }
     // Keep legacy name in sync for places that still use it
-    const combinedName = `${firstName} ${lastName}`.trim();
-    if (combinedName) {
-      user.name = combinedName;
+    if (
+      Object.prototype.hasOwnProperty.call(req.body, "firstName") ||
+      Object.prototype.hasOwnProperty.call(req.body, "lastName")
+    ) {
+      const combinedName = `${user.firstName} ${user.lastName}`.trim();
+      if (combinedName) {
+        user.name = combinedName;
+      }
     }
 
     await user.save();

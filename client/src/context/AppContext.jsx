@@ -10,6 +10,17 @@ export const AppContextProvider = (props) => {
   const [userData, setUserData] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
+  const getUserData = async () => {
+    setLoadingUser(true);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/user/data");
+      data.success ? setUserData(data.userData) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoadingUser(false);
+    }
+  };
   const getAuthState = async () => {
     try {
       const { data } = await axios.get(backendUrl + "/api/auth/is-auth");
@@ -23,17 +34,7 @@ export const AppContextProvider = (props) => {
       setAuthChecked(true);
     }
   };
-  const getUserData = async () => {
-    setLoadingUser(true);
-    try {
-      const { data } = await axios.get(backendUrl + "/api/user/data");
-      data.success ? setUserData(data.userData) : toast.error(data.message);
-    } catch (error) {
-      toast.error(data.message);
-    } finally {
-      setLoadingUser(false);
-    }
-  };
+
   useEffect(() => {
     getAuthState();
   }, []);

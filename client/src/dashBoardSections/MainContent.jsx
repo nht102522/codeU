@@ -2,20 +2,7 @@ import React, { useState } from 'react';
 import LessonCard from './LessonCard';
 import CourseCard from './CourseCard';
 import { chapters, chapterOptions } from '../lecturePageSections/ChapterSelector';
-
-const pythonChapterOrder = [
-  'intro',
-  'setup',
-  'basics',
-  'datatypes',
-  'control',
-  'functions',
-  'modules',
-  'files',
-  'oop',
-  'libraries',
-  'next'
-];
+import { chapterOrder } from '../lecturePageSections/lecture-order';
 
 function MainContent() {
   const lessons = [
@@ -32,7 +19,7 @@ function MainContent() {
       lessonsCompleted: 'lessons completed',
       toc: chapters,
       chapterLabels: chapterOptions,
-      chapterOrder: pythonChapterOrder
+      chapterOrder
     },
     {
       name: 'JAVASCRIPT',

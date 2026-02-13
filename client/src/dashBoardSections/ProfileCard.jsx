@@ -5,7 +5,7 @@ function ProfileCard() {
   const { userData } = useContext(AppContent);
 
   return (
-    <div className="bg-[radial-gradient(circle_at_center,_#1e40af,_#38bdf8)] rounded-xl p-5 text-center text-white mb-5">
+    <div className="bg-[radial-gradient(circle_at_center,_#1e40af,_#38bdf8)] rounded-xl p-7 text-center text-white mb-5 w-full max-w-md mx-auto">
       <div className="w-24 h-24 bg-yellow-400 rounded-full mx-auto mb-4 flex items-center justify-center text-4xl font-bold text-white overflow-hidden">
         {userData && userData.avatarUrl ? (
           <img
