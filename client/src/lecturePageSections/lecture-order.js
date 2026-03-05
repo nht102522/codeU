@@ -13,4 +13,8 @@ export const chapterOrder = [
   "chapter12",
   "chapter13",
   "chapter14",
+  "chapter15",
+  "chapter16",
+  "chapter17",
+  "chapter18",
 ];

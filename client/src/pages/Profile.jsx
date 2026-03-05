@@ -20,6 +20,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import NavBarHomePage from "../components/NavBarHomePage";
+import { chapters } from "../lecturePageSections/ChapterSelector";
+import { chapterOrder } from "../lecturePageSections/lecture-order";
 
 const Profile = () => {
   const {
@@ -40,6 +42,10 @@ const Profile = () => {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewText, setReviewText] = useState("");
+  const [postingReview, setPostingReview] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -70,6 +76,32 @@ const Profile = () => {
       });
     });
     return total;
+  }, [userData]);
+
+  const pythonCompletion = useMemo(() => {
+    const progress = userData?.lectureProgress?.python || {};
+    const totalLectures = chapterOrder.reduce(
+      (sum, key) => sum + (chapters[key]?.length || 0),
+      0,
+    );
+    const completedLectures = chapterOrder.reduce((sum, key) => {
+      const lectureCount = chapters[key]?.length || 0;
+      const completed = progress[key] || [];
+      const uniqueValid = new Set(
+        completed.filter(
+          (index) =>
+            Number.isInteger(index) &&
+            index >= 0 &&
+            index < lectureCount,
+        ),
+      );
+      return sum + uniqueValid.size;
+    }, 0);
+    return {
+      totalLectures,
+      completedLectures,
+      isComplete: totalLectures > 0 && completedLectures >= totalLectures,
+    };
   }, [userData]);
 
   const handleSave = async () => {
@@ -135,6 +167,70 @@ const Profile = () => {
       const message =
         error.response?.data?.message || error.message || "Failed to update avatar";
       toast.error(message);
+    }
+  };
+
+  const reviewStorageKey = "codeu:reviews";
+  const reviewColors = [
+    "bg-blue-100",
+    "bg-pink-100",
+    "bg-teal-100",
+    "bg-orange-100",
+    "bg-purple-100",
+  ];
+
+  const getReviewName = () => {
+    const fullName = `${firstName} ${lastName}`.trim();
+    if (fullName) return fullName;
+    if (userData?.name) return userData.name;
+    return "CodeU Learner";
+  };
+
+  const pickReviewColor = (name) => {
+    const hash = Array.from(name).reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return reviewColors[hash % reviewColors.length];
+  };
+
+  const handlePostReview = () => {
+    if (!isLoggedin) {
+      toast.error("Please log in to post a review");
+      return;
+    }
+    const trimmed = reviewText.trim();
+    if (!reviewRating) {
+      toast.error("Please select a star rating");
+      return;
+    }
+    if (trimmed.length < 10) {
+      toast.error("Please write at least 10 characters");
+      return;
+    }
+    if (trimmed.length > 300) {
+      toast.error("Please keep your review under 300 characters");
+      return;
+    }
+    setPostingReview(true);
+    try {
+      const name = getReviewName();
+      const nextReview = {
+        id: `user-${Date.now()}`,
+        name,
+        rating: reviewRating,
+        text: trimmed,
+        img: avatarUrl || userData?.avatarUrl || "https://i.pravatar.cc/150?u=codeu-user",
+        color: pickReviewColor(name),
+        createdAt: new Date().toISOString(),
+      };
+      const existing = JSON.parse(localStorage.getItem(reviewStorageKey) || "[]");
+      const updated = [nextReview, ...(Array.isArray(existing) ? existing : [])].slice(0, 20);
+      localStorage.setItem(reviewStorageKey, JSON.stringify(updated));
+      setReviewText("");
+      setReviewRating(0);
+      toast.success("Thanks! Your review is now on the homepage.");
+    } catch (error) {
+      toast.error("Could not save your review. Please try again.");
+    } finally {
+      setPostingReview(false);
     }
   };
 
@@ -222,7 +318,9 @@ const Profile = () => {
               </HStack>
               <HStack>
                 <Text>🏅</Text>
-                <Text>Course Completed: 0</Text>
+                <Text>
+                  Course Completed: {pythonCompletion.isComplete ? 1 : 0}
+                </Text>
               </HStack>
             </VStack>
           </VStack>
@@ -388,6 +486,71 @@ const Profile = () => {
                 )}
               </HStack>
             </VStack>
+
+            <Box
+              mt={10}
+              borderRadius="2xl"
+              border="1px solid"
+              borderColor="gray.200"
+              p={{ base: 5, md: 6 }}
+              boxShadow="sm"
+              bg="white"
+            >
+              <Heading fontSize="2xl" color="gray.800" mb={2}>
+                Write a Review
+              </Heading>
+              <Text color="gray.500" mb={5}>
+                Share your experience and help others discover CodeU.
+              </Text>
+
+              <HStack spacing={1} mb={4} onMouseLeave={() => setHoverRating(0)}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Button
+                    key={star}
+                    variant="ghost"
+                    size="lg"
+                    aria-label={`Rate ${star} star`}
+                    onClick={() => setReviewRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onFocus={() => setHoverRating(star)}
+                    onBlur={() => setHoverRating(0)}
+                    color={star <= (hoverRating || reviewRating) ? "yellow.400" : "gray.300"}
+                    _hover={{ color: "yellow.400" }}
+                    minW="auto"
+                    px={1}
+                  >
+                    ★
+                  </Button>
+                ))}
+              </HStack>
+
+              <Textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="Describe your experience..."
+                rows={4}
+                resize="vertical"
+                color="gray.800"
+                bg="white"
+                borderColor="gray.300"
+                _focus={{
+                  borderColor: "blue.400",
+                  boxShadow: "0 0 0 1px #60a5fa",
+                }}
+                _placeholder={{ color: "gray.400" }}
+              />
+
+              <Button
+                mt={4}
+                colorScheme="blue"
+                w="full"
+                size="lg"
+                onClick={handlePostReview}
+                isLoading={postingReview}
+              >
+                Post Review
+              </Button>
+            </Box>
           </Box>
         </Flex>
       </Box>

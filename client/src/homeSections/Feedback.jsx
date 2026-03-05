@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 const REVIEWS = [
   {
@@ -44,22 +50,28 @@ const REVIEWS = [
 ];
 
 const STAR_COUNT = 5;
+const REVIEW_STORAGE_KEY = "codeu:reviews";
 
 const Feedback = () => {
   const [activeIndex, setActiveIndex] = useState(2);
   const [dragging, setDragging] = useState(false);
   const [dragY, setDragY] = useState(0);
+  const [customReviews, setCustomReviews] = useState([]);
 
   const startYRef = useRef(0);
   const timerRef = useRef(null);
 
-  const len = REVIEWS.length;
+  const allReviews = useMemo(
+    () => [...customReviews, ...REVIEWS],
+    [customReviews],
+  );
+  const len = allReviews.length;
 
   const updateIndex = useCallback(
     (dir) => {
       setActiveIndex((prev) => (prev + dir + len) % len);
     },
-    [len]
+    [len],
   );
 
   const pauseAuto = useCallback(() => {
@@ -79,6 +91,35 @@ const Feedback = () => {
     return () => pauseAuto();
   }, [pauseAuto, resumeAuto]);
 
+  useEffect(() => {
+    const loadReviews = () => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(REVIEW_STORAGE_KEY) || "[]");
+        const next = Array.isArray(stored)
+          ? stored.filter(
+              (review) =>
+                review &&
+                typeof review.name === "string" &&
+                typeof review.text === "string" &&
+                typeof review.rating === "number",
+            )
+          : [];
+        setCustomReviews(next);
+      } catch (error) {
+        setCustomReviews([]);
+      }
+    };
+
+    loadReviews();
+    const handleStorage = (event) => {
+      if (event.key === REVIEW_STORAGE_KEY) {
+        loadReviews();
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, []);
+
   const startDrag = useCallback(
     (clientY) => {
       setDragging(true);
@@ -86,7 +127,7 @@ const Feedback = () => {
       setDragY(0);
       pauseAuto();
     },
-    [pauseAuto]
+    [pauseAuto],
   );
 
   const onDrag = useCallback(
@@ -101,7 +142,7 @@ const Feedback = () => {
         setDragY(0);
       }
     },
-    [dragging, updateIndex]
+    [dragging, updateIndex],
   );
 
   const endDrag = useCallback(() => {
@@ -164,13 +205,16 @@ const Feedback = () => {
           : "transform 0.6s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.4s",
       };
     },
-    [activeIndex, dragY, dragging, len]
+    [activeIndex, dragY, dragging, len],
   );
 
-  const stars = useMemo(() => Array.from({ length: STAR_COUNT }, (_, i) => i + 1), []);
+  const stars = useMemo(
+    () => Array.from({ length: STAR_COUNT }, (_, i) => i + 1),
+    [],
+  );
 
   return (
-    <section className="bg-[#FAFAFA]">
+    <section>
       <div
         className="min-h-screen flex items-center justify-center p-8 font-sans overflow-hidden select-none"
         onMouseEnter={pauseAuto}
@@ -183,15 +227,15 @@ const Feedback = () => {
               CodeU-ers Says
             </h2>
             <p className="text-gray-500 text-lg">
-              Drag the stack or click any blurred card to bring it to focus.
-              Perfectly stable, no tilt.
+              Browse real stories from our learners and see how CodeU is helping
+              them grow.
             </p>
             <button
               type="button"
               onClick={() => updateIndex(1)}
               className="bg-gradient-to-r from-[#86C5FF] to-[#2E5AA7] text-white px-10 py-4 rounded-lg font-bold shadow-xl active:scale-95 transition-all"
             >
-              Sign up now
+              Read more
             </button>
           </div>
 
@@ -204,7 +248,11 @@ const Feedback = () => {
             }}
           >
             <div className="relative w-full max-w-md h-full flex items-center justify-center">
-              {REVIEWS.map((review, index) => (
+              {allReviews.map((review, index) => {
+                const reviewColor = review.color || "bg-blue-100";
+                const reviewImg =
+                  review.img || "https://i.pravatar.cc/150?u=codeu-default";
+                return (
                 <button
                   key={review.id}
                   type="button"
@@ -220,10 +268,10 @@ const Feedback = () => {
                   style={calculateStyle(index)}
                 >
                   <div
-                    className={`flex-shrink-0 p-1 rounded-full shadow-sm ${review.color}`}
+                    className={`flex-shrink-0 p-1 rounded-full shadow-sm ${reviewColor}`}
                   >
                     <img
-                      src={review.img}
+                      src={reviewImg}
                       alt={review.name}
                       className="w-16 h-16 rounded-full object-cover pointer-events-none"
                     />
@@ -256,7 +304,8 @@ const Feedback = () => {
                     </p>
                   </div>
                 </button>
-              ))}
+              );
+            })}
             </div>
           </div>
         </div>

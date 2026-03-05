@@ -59,6 +59,40 @@ export const markLectureComplete = async (req, res) => {
   }
 };
 
+export const unmarkLectureComplete = async (req, res) => {
+  try {
+    const { userId, courseId, chapterKey, lectureIndex } = req.body;
+
+    if (!courseId || !chapterKey || lectureIndex === undefined) {
+      return res.json({
+        success: false,
+        message: "Missing courseId, chapterKey or lectureIndex",
+      });
+    }
+
+    const update = {
+      $pull: {
+        [`lectureProgress.${courseId}.${chapterKey}`]: Number(lectureIndex),
+      },
+    };
+
+    const user = await userModel.findByIdAndUpdate(userId, update, {
+      new: true,
+    });
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    return res.json({
+      success: true,
+      message: "Lecture marked as incomplete",
+      lectureProgress: user.lectureProgress || {},
+    });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export const getLectureProgress = async (req, res) => {
   try {
     const { userId } = req.body;

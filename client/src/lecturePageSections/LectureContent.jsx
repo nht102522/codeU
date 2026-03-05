@@ -157,6 +157,41 @@ import FibonacciNumbers from "./chapter6_content/FibonacciNumbers";
 import InputValidation from "./chapter6_content/InputValidation";
 import DebuggingReturnValues from "./chapter6_content/DebuggingReturnValues";
 import Chapter6PracticeExercises from "./chapter6_content/PracticeExercises";
+import DefiningMethods from "./chapter15_content/DefiningMethods";
+import ConvertingFunctionsToMethods from "./chapter15_content/ConvertingFunctionsToMethods";
+import StaticMethods from "./chapter15_content/StaticMethods";
+import ComparingTimeObjects from "./chapter15_content/ComparingTimeObjects";
+import SpecialMethodsStr from "./chapter15_content/SpecialMethodsStr";
+import InitMethod from "./chapter15_content/InitMethod";
+import OperatorOverloading from "./chapter15_content/OperatorOverloading";
+import DebuggingInvariants from "./chapter15_content/DebuggingInvariants";
+import Chapter15PracticeExercises from "./chapter15_content/PracticeExercises";
+import RepresentingPlayingCards from "./chapter17_content/RepresentingPlayingCards";
+import CardStringRepresentation from "./chapter17_content/CardStringRepresentation";
+import ComparingCards from "./chapter17_content/ComparingCards";
+import CreatingADeck from "./chapter17_content/CreatingADeck";
+import InheritanceParentsAndChildren from "./chapter17_content/InheritanceParentsAndChildren";
+import Polymorphism from "./chapter17_content/Polymorphism";
+import Specialization from "./chapter17_content/Specialization";
+import LiskovSubstitutionPrinciple from "./chapter17_content/LiskovSubstitutionPrinciple";
+import DebuggingInheritance from "./chapter17_content/DebuggingInheritance";
+import Chapter17PracticeExercises from "./chapter17_content/PracticeExercises";
+import CreatingAPoint from "./chapter16_content/CreatingAPoint";
+import CreatingALine from "./chapter16_content/CreatingALine";
+import EquivalenceAndIdentity from "./chapter16_content/EquivalenceAndIdentity";
+import RectanglesDeepCopyProblem from "./chapter16_content/RectanglesDeepCopyProblem";
+import Chapter16Polymorphism from "./chapter16_content/Polymorphism";
+import DebuggingAndGlossary from "./chapter16_content/DebuggingAndGlossary";
+import Chapter16PracticeExercises from "./chapter16_content/PracticeExercises";
+import Chapter18DefiningMethods from "./chapter18_content/DefiningMethods";
+import Chapter18ConvertingFunctionsToMethods from "./chapter18_content/ConvertingFunctionsToMethods";
+import Chapter18StaticMethods from "./chapter18_content/StaticMethods";
+import Chapter18ComparingTimeObjects from "./chapter18_content/ComparingTimeObjects";
+import Chapter18SpecialMethodsStr from "./chapter18_content/SpecialMethodsStr";
+import Chapter18InitMethod from "./chapter18_content/InitMethod";
+import Chapter18OperatorOverloading from "./chapter18_content/OperatorOverloading";
+import Chapter18DebuggingInvariants from "./chapter18_content/DebuggingInvariants";
+import Chapter18PracticeExercises from "./chapter18_content/PracticeExercises";
 
 // Lecture content database
 const lectureContent = {
@@ -1167,6 +1202,189 @@ const lectureContent = {
       title: "Practice Exercises",
       description: "Apply Chapter 6 concepts with exercises.",
       content: <Chapter6PracticeExercises />,
+    },
+  },
+  chapter15: {
+    0: {
+      title: "Defining Methods",
+      description: "Define methods on classes for behavior.",
+      content: <DefiningMethods />,
+    },
+    1: {
+      title: "Converting Functions to Methods",
+      description: "Move functions into classes as methods.",
+      content: <ConvertingFunctionsToMethods />,
+    },
+    2: {
+      title: "Static Methods",
+      description: "Use static methods when no instance is needed.",
+      content: <StaticMethods />,
+    },
+    3: {
+      title: "Comparing Time Objects",
+      description: "Compare Time objects effectively.",
+      content: <ComparingTimeObjects />,
+    },
+    4: {
+      title: "Special Methods: __str__",
+      description: "Customize string output with __str__.",
+      content: <SpecialMethodsStr />,
+    },
+    5: {
+      title: "The __init__ Method",
+      description: "Initialize objects with __init__.",
+      content: <InitMethod />,
+    },
+    6: {
+      title: "Operator Overloading",
+      description: "Define behavior for operators on objects.",
+      content: <OperatorOverloading />,
+    },
+    7: {
+      title: "Debugging: Invariants",
+      description: "Use invariants to debug object state.",
+      content: <DebuggingInvariants />,
+    },
+    8: {
+      title: "Practice Exercises",
+      description: "Apply Chapter 15 concepts with exercises.",
+      content: <Chapter15PracticeExercises />,
+    },
+  },
+  chapter17: {
+    0: {
+      title: "Representing Playing Cards",
+      description: "Model playing cards with classes.",
+      content: <RepresentingPlayingCards />,
+    },
+    1: {
+      title: "Card String Representation",
+      description: "Create readable card string output.",
+      content: <CardStringRepresentation />,
+    },
+    2: {
+      title: "Comparing Cards",
+      description: "Compare cards using ranks and suits.",
+      content: <ComparingCards />,
+    },
+    3: {
+      title: "Creating a Deck",
+      description: "Build a deck and add utility methods.",
+      content: <CreatingADeck />,
+    },
+    4: {
+      title: "Inheritance: Parents and Children",
+      description: "Use inheritance to extend behavior.",
+      content: <InheritanceParentsAndChildren />,
+    },
+    5: {
+      title: "Polymorphism",
+      description: "Use polymorphism to write flexible code.",
+      content: <Polymorphism />,
+    },
+    6: {
+      title: "Specialization",
+      description: "Specialize behavior in subclasses.",
+      content: <Specialization />,
+    },
+    7: {
+      title: "The Liskov Substitution Principle",
+      description: "Understand substitutability in class hierarchies.",
+      content: <LiskovSubstitutionPrinciple />,
+    },
+    8: {
+      title: "Debugging Inheritance",
+      description: "Debug issues in inherited class behavior.",
+      content: <DebuggingInheritance />,
+    },
+    9: {
+      title: "Practice Exercises",
+      description: "Apply Chapter 17 concepts with exercises.",
+      content: <Chapter17PracticeExercises />,
+    },
+  },
+  chapter16: {
+    0: {
+      title: "Creating a Point",
+      description: "Create and work with Point objects.",
+      content: <CreatingAPoint />,
+    },
+    1: {
+      title: "Creating a Line",
+      description: "Create a Line using two Points.",
+      content: <CreatingALine />,
+    },
+    2: {
+      title: "Equivalence and Identity",
+      description: "Understand equality vs identity for objects.",
+      content: <EquivalenceAndIdentity />,
+    },
+    3: {
+      title: "Rectangles & The Deep Copy Problem",
+      description: "Handle nested objects and deep copies.",
+      content: <RectanglesDeepCopyProblem />,
+    },
+    4: {
+      title: "Polymorphism",
+      description: "Use polymorphism across shape types.",
+      content: <Chapter16Polymorphism />,
+    },
+    5: {
+      title: "Debugging & Glossary",
+      description: "Debug object code and review key terms.",
+      content: <DebuggingAndGlossary />,
+    },
+    6: {
+      title: "Practice Exercises",
+      description: "Apply Chapter 16 concepts with exercises.",
+      content: <Chapter16PracticeExercises />,
+    },
+  },
+  chapter18: {
+    0: {
+      title: "Defining Methods",
+      description: "Define methods on classes for behavior.",
+      content: <Chapter18DefiningMethods />,
+    },
+    1: {
+      title: "Converting Functions to Methods",
+      description: "Move functions into classes as methods.",
+      content: <Chapter18ConvertingFunctionsToMethods />,
+    },
+    2: {
+      title: "Static Methods",
+      description: "Use static methods when no instance is needed.",
+      content: <Chapter18StaticMethods />,
+    },
+    3: {
+      title: "Comparing Time Objects",
+      description: "Compare Time objects effectively.",
+      content: <Chapter18ComparingTimeObjects />,
+    },
+    4: {
+      title: "Special Methods: __str__",
+      description: "Customize string output with __str__.",
+      content: <Chapter18SpecialMethodsStr />,
+    },
+    5: {
+      title: "The __init__ Method",
+      description: "Initialize objects with __init__.",
+      content: <Chapter18InitMethod />,
+    },
+    6: {
+      title: "Operator Overloading",
+      description: "Define behavior for operators on objects.",
+      content: <Chapter18OperatorOverloading />,
+    },
+    7: {
+      title: "Debugging: Invariants",
+      description: "Use invariants to debug object state.",
+      content: <Chapter18DebuggingInvariants />,
+    },
+    8: {
+      title: "Practice Exercises",
+      description: "Apply Chapter 18 concepts with exercises.",
+      content: <Chapter18PracticeExercises />,
     },
   },
 };

@@ -11,6 +11,7 @@ import { ToastContainer } from "react-toastify";
 import LecturePage from "./pages/LecturePage";
 import Profile from "./pages/Profile";
 import AboutUs from "./pages/AboutUs";
+import CertificateDownload from "./pages/CertificateDownload";
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
             </ChakraProvider>
           }
         />
+        <Route path="/certificate" element={<CertificateDownload />} />
         <Route path="/aboutus" element={<AboutUs />} />
       </Routes>
     </div>

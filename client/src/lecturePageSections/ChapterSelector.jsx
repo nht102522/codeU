@@ -176,6 +176,49 @@ export const chapters = {
     "Debugging with Objects",
     "Practice Exercises",
   ],
+  chapter15: [
+    "Defining Methods",
+    "Converting Functions to Methods",
+    "Static Methods",
+    "Comparing Time Objects",
+    "Special Methods: __str__",
+    "The __init__ Method",
+    "Operator Overloading",
+    "Debugging: Invariants",
+    "Practice Exercises",
+  ],
+  chapter16: [
+    "Creating a Point",
+    "Creating a Line",
+    "Equivalence and Identity",
+    "Rectangles & The Deep Copy Problem",
+    "Polymorphism",
+    "Debugging & Glossary",
+    "Practice Exercises",
+  ],
+  chapter17: [
+    "Representing Playing Cards",
+    "Card String Representation",
+    "Comparing Cards",
+    "Creating a Deck",
+    "Inheritance: Parents and Children",
+    "Polymorphism",
+    "Specialization",
+    "The Liskov Substitution Principle",
+    "Debugging Inheritance",
+    "Practice Exercises",
+  ],
+  chapter18: [
+    "Defining Methods",
+    "Defining Methods",
+    "Static Methods",
+    "Comparing Time Objects",
+    "Special Methods: __str__",
+    "The __init__ Method",
+    "Operator Overloading",
+    "Debugging: Invariants",
+    "Practice Exercises",
+  ],
 };
 
 export const chapterOptions = {
@@ -193,6 +236,10 @@ export const chapterOptions = {
   chapter12: "Chapter 12: Text Analysis and Generation",
   chapter13: "Chapter 13: Files and Databases",
   chapter14: "Chapter 14: Classes and Functions",
+  chapter15: "Chapter 15: Classes and Methods",
+  chapter16: "Chapter 16: Objects and Geometry",
+  chapter17: "Chapter 17: Inheritance",
+  chapter18: "Chapter 18: Methods and Operators",
 };
 
 export const ChapterSelector = ({ selectedChapter, onChapterChange }) => {

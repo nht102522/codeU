@@ -114,16 +114,22 @@ function Header() {
                   </li>
                 )}
                 <li
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/")}
                   className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
                 >
-                  Profile
+                  Home
                 </li>
                 <li
                   onClick={() => navigate("/dashboard")}
                   className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
                 >
                   Dashboard
+                </li>
+                <li
+                  onClick={() => navigate("/profile")}
+                  className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                >
+                  Profile
                 </li>
                 <li
                   onClick={logout}

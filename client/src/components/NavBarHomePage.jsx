@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import logo from "../assets/images/logo.png";
 import hamburger from "../assets/icons/hamburger.svg";
 import { navLinks } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { AppContent } from "../context/AppContext.jsx";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 export default function NavBarHomePage({ logoSize = 56 }) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { userData, backendUrl, setUserData, setIsLoggedin } =
     useContext(AppContent);
 
@@ -72,12 +73,22 @@ export default function NavBarHomePage({ logoSize = 56 }) {
           <ul className="flex-1 flex justify-center items-center gap-16 text-gray-900">
             {navLinks.map((link) => (
               <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="font-bold text-xl text-black visited:text-black hover:!text-blue-600 transition-colors"
-                >
-                  {link.label}
-                </a>
+                {location.pathname === "/" ? (
+                  <a
+                    href={link.href}
+                    className="font-bold text-xl text-black visited:text-black hover:!text-blue-600 transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/${link.href}`)}
+                    className="font-bold text-xl text-black hover:!text-blue-600 transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -105,6 +116,12 @@ export default function NavBarHomePage({ logoSize = 56 }) {
                       Verify email
                     </li>
                   )}
+                  <li
+                    onClick={() => navigate("/")}
+                    className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
+                  >
+                    Home
+                  </li>
                   <li
                     onClick={() => navigate("/dashboard")}
                     className="py-1 px-3 hover:bg-gray-200 cursor-pointer whitespace-nowrap"
