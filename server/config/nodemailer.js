@@ -1,4 +1,5 @@
 const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
+console.log("Email transport: Brevo HTTP API");
 const REQUEST_TIMEOUT_MS = 10000;
 
 const normalizeRecipients = (to) => {
