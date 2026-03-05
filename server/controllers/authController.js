@@ -30,15 +30,13 @@ export const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    //Sending welcome email
-
+    // Sending welcome email (non-blocking for signup flow)
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: email,
       subject: "Welcome to CodeU",
       text: `Welcome to CodeU website. Your account has been created with email id: ${email}`,
     };
-    await transporter.sendMail(mailOptions);
     transporter
       .sendMail(mailOptions)
       .catch((err) =>
