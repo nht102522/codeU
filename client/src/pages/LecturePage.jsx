@@ -190,6 +190,8 @@ function LecturePage() {
       return;
     }
     const toastId = toast.loading("Update processing...");
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
     try {
       axios.defaults.withCredentials = true;
       const payload = {
@@ -199,7 +201,7 @@ function LecturePage() {
       };
       const requestConfig = {
         withCredentials: true,
-        timeout: 10000,
+        signal: controller.signal,
       };
       const request = isLectureDone
         ? axios.delete(`${backendUrl}/api/user/progress`, {
@@ -243,7 +245,7 @@ function LecturePage() {
       }
     } catch (error) {
       const message =
-        error.code === "ECONNABORTED"
+        error.code === "ERR_CANCELED"
           ? "Update timed out. Check your server and try again."
           : error.response?.data?.message ||
             error.message ||
@@ -256,6 +258,8 @@ function LecturePage() {
         closeOnClick: true,
         draggable: true,
       });
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 
