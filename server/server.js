@@ -8,7 +8,6 @@ import userRouter from "./routes/userRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
-connectDB();
 // const allowedOrigins = ["http://localhost:5173"];
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
@@ -41,4 +40,14 @@ app.use(
 app.get("/", (req, res) => res.send("API working Fine"));
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.listen(port, () => console.log(`Server started on PORT: ${port}`));
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(port, () => console.log(`Server started on PORT: ${port}`));
+  } catch (error) {
+    console.error("Failed to start server:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
