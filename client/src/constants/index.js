@@ -1,10 +1,10 @@
 export const navLinks = [
   { href: "#home", label: "Home" },
-  { href: "#courses", label: "Cources" },
+  { href: "#courses", label: "Courses" },
   { href: "#community", label: "Community" },
 ];
 export const footerLinks = [
-  { href: "#courses", label: "Cources" },
+  { href: "#courses", label: "Courses" },
   { href: "#community", label: "Community" },
   { href: "#aboutus", label: "About Us" },
   { href: "#review", label: "Reviews" },
