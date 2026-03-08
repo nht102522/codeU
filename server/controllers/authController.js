@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import {
@@ -56,8 +57,17 @@ export const login = async (req, res) => {
       message: "Email and password are required",
     });
   }
+  if (mongoose.connection.readyState !== 1) {
+    return res
+      .status(503)
+      .json({ success: false, message: "Database not ready. Try again." });
+  }
   try {
-    const user = await userModel.findOne({ email });
+    const user = await userModel
+      .findOne({ email })
+      .select("password")
+      .lean()
+      .maxTimeMS(5000);
     if (!user) {
       return res.json({ success: false, message: "Invalid email" });
     }

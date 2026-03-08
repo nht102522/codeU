@@ -1,5 +1,11 @@
 import userModel from "../models/userModel.js";
 
+const MAX_AVATAR_DATA_URL_CHARS = 200000;
+const isOversizedDataUrl = (value) =>
+  typeof value === "string" &&
+  value.startsWith("data:image/") &&
+  value.length > MAX_AVATAR_DATA_URL_CHARS;
+
 export const getUserData = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -7,13 +13,23 @@ export const getUserData = async (req, res) => {
     if (!user) {
       return res.json({ success: false, message: "User not found" });
     }
+    let avatarUrl = user.avatarUrl || "";
+    if (isOversizedDataUrl(avatarUrl)) {
+      avatarUrl = "";
+      user.avatarUrl = "";
+      user
+        .save()
+        .catch((err) =>
+          console.error("Failed to clear oversized avatar:", err.message)
+        );
+    }
     return res.json({
       success: true,
       userData: {
         name: user.name,
         firstName: user.firstName,
         lastName: user.lastName,
-        avatarUrl: user.avatarUrl,
+        avatarUrl,
         bio: user.bio,
         githubUrl: user.githubUrl,
         linkedinUrl: user.linkedinUrl,
@@ -134,6 +150,12 @@ export const updateProfile = async (req, res) => {
       user.lastName = lastName;
     }
     if (Object.prototype.hasOwnProperty.call(req.body, "avatarUrl")) {
+      if (isOversizedDataUrl(avatarUrl)) {
+        return res.json({
+          success: false,
+          message: "Avatar image is too large. Please upload a smaller image.",
+        });
+      }
       user.avatarUrl = avatarUrl;
     }
     if (Object.prototype.hasOwnProperty.call(req.body, "bio")) {
