@@ -197,14 +197,16 @@ function LecturePage() {
         chapterKey: selectedChapter,
         lectureIndex: Number(selectedLecture),
       };
+      const requestConfig = {
+        withCredentials: true,
+        timeout: 10000,
+      };
       const request = isLectureDone
         ? axios.delete(`${backendUrl}/api/user/progress`, {
+            ...requestConfig,
             data: payload,
-            withCredentials: true,
           })
-        : axios.post(`${backendUrl}/api/user/progress`, payload, {
-            withCredentials: true,
-          });
+        : axios.post(`${backendUrl}/api/user/progress`, payload, requestConfig);
       const { data } = await request;
 
       if (data.success) {
@@ -241,9 +243,11 @@ function LecturePage() {
       }
     } catch (error) {
       const message =
-        error.response?.data?.message ||
-        error.message ||
-        "Failed to update lecture status";
+        error.code === "ECONNABORTED"
+          ? "Update timed out. Check your server and try again."
+          : error.response?.data?.message ||
+            error.message ||
+            "Failed to update lecture status";
       toast.update(toastId, {
         render: message,
         type: "error",
