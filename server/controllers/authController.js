@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
+import { randomInt } from "node:crypto";
 import userModel from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import {
@@ -109,14 +110,13 @@ export const sendVerifyOtp = async (req, res) => {
   try {
     const userId = req.body.userId;
     const user = await userModel.findById(userId);
-    console.log("🔥", user);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
     if (user.isAccountVerified) {
       return res.json({ success: false, message: "Account Already Verified" });
     }
-    const otp = String(Math.floor(100000 + Math.random() * 900000));
-    user.verifyOtp = otp;
-    user.verifyOtpExpiredAt = Date.now() + 24 * 60 * 60 * 1000;
-    await user.save();
+    const otp = String(randomInt(100000, 1000000));
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: user.email,
@@ -128,6 +128,9 @@ export const sendVerifyOtp = async (req, res) => {
       ),
     };
     await transporter.sendMail(mailOptions);
+    user.verifyOtp = otp;
+    user.verifyOtpExpiredAt = Date.now() + 24 * 60 * 60 * 1000;
+    await user.save();
     return res.json({
       success: true,
       message: "Verification OTP Sent on Email",
@@ -154,7 +157,7 @@ export const verifyEmail = async (req, res) => {
     if (user.verifyOtp === "" || user.verifyOtp !== otp) {
       return res.json({ success: false, message: "Invalid OTP" });
     }
-    if (user.verifyOtpExpiredAt < Date.now) {
+    if (user.verifyOtpExpiredAt <= Date.now()) {
       return res.json({ success: false, message: "OTP Expired" });
     }
     user.isAccountVerified = true;
@@ -163,7 +166,7 @@ export const verifyEmail = async (req, res) => {
     await user.save();
     return res.json({ success: true, message: "Email verified successfully" });
   } catch (error) {
-    return res.jon({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
 

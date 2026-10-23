@@ -1,5 +1,6 @@
+import nodemailer from "nodemailer";
+
 const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
-console.log("Email transport: Brevo HTTP API");
 const REQUEST_TIMEOUT_MS = 10000;
 
 const normalizeRecipients = (to) => {
@@ -26,12 +27,38 @@ const buildSender = (from) => {
 };
 
 const sendMail = async ({ from, to, subject, text, html }) => {
-  const apiKey = process.env.BREVO_API_KEY;
-  if (!apiKey) {
-    throw new Error("BREVO_API_KEY is not set");
-  }
   if (!from && !process.env.SENDER_EMAIL) {
     throw new Error("SENDER_EMAIL is not set");
+  }
+  const apiKey = process.env.BREVO_API_KEY;
+  if (!apiKey) {
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      throw new Error(
+        "Email is not configured. Set BREVO_API_KEY or both SMTP_USER and SMTP_PASS on the server."
+      );
+    }
+    const port = Number(process.env.SMTP_PORT || 587);
+    const smtp = nodemailer.createTransport({
+      host: process.env.SMTP_HOST || "smtp-relay.brevo.com",
+      port,
+      secure: port === 465,
+      requireTLS: port !== 465,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+      connectionTimeout: REQUEST_TIMEOUT_MS,
+      greetingTimeout: REQUEST_TIMEOUT_MS,
+      socketTimeout: REQUEST_TIMEOUT_MS,
+    });
+    const sender = buildSender(from);
+    return smtp.sendMail({
+      from: { address: sender.email, name: sender.name },
+      to,
+      subject,
+      text,
+      html,
+    });
   }
 
   const controller = new AbortController();
